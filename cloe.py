@@ -146,8 +146,8 @@ def main():
 
     # Adding arguments.
     parser.add_argument("action", type=str, help="The action to perform (ls, join, add, rm)")
-    parser.add_argument("raw_mid", type=str, nargs="?", help="The action to perform (ls, join, add, rm)")
-    parser.add_argument("raw_mpw", type=str, nargs="?", help="The action to perform (ls, join, add, rm)")
+    parser.add_argument("raw_mid", type=str, nargs="?", help="Meeting ID to quick join a meeting")
+    parser.add_argument("raw_mpw", type=str, nargs="?", help="Meeting password when quick joining a meeting (optional)")
     parser.add_argument("-n", "--mname", type=str, metavar="Meeting Name",
                         help="Name of the Zoom meeting")
 
