@@ -1,5 +1,5 @@
 # Cloe
-Cloe is a tool to store Zoom meeting details and join meetings on the Zoom desktop client using the CLI.  
+Cloe is a CLI tool to store Zoom meeting details and join meetings on the Zoom desktop client.  
 
 **Note**: This tool is made for Linux and MacOS. It will not work on Windows.
 
@@ -53,7 +53,7 @@ List stored meeting entries:
 `$ python3 ./cloe.py ls`  
   
 
-### 4. Remove a stored meeting entry from Cloe
+### 4. Remove a stored meeting entry
 Remove a meeting entry:  
 `$ python3 ./cloe.py rm -n <meeting-name>`  
   
