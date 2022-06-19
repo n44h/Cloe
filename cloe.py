@@ -123,12 +123,14 @@ def print_meeting_names():
     print("\n")
 
 
-def join_meeting(meeting_name: str):
-    # Getting the meeting ID.
-    meeting_id = MEETING_DATA[meeting_name]["meeting_id"]
+def join_meeting(meeting_name: str = None, meeting_id: str = None, meeting_password: str = None):
+    # If meeting_id is not provided, get it from MEETING_DATA.
+    if meeting_id is None:
+        meeting_id = MEETING_DATA[meeting_name]["meeting_id"]
 
-    # Getting the meeting password.
-    meeting_password = MEETING_DATA[meeting_name]["password"]
+    # If meeting_password is not provided, get it from MEETING_DATA.
+    if meeting_password is None:
+        meeting_password = MEETING_DATA[meeting_name]["password"]
 
     # Building the Zoom command. Only attach the password section if the meeting has a password.
     command = f'zoommtg://zoom.us/join?confno={meeting_id}' + (f'&pwd={meeting_password}' if meeting_password else "")
@@ -144,6 +146,8 @@ def main():
 
     # Adding arguments.
     parser.add_argument("action", type=str, help="The action to perform (ls, join, add, rm)")
+    parser.add_argument("raw_mid", type=str, nargs="?", help="The action to perform (ls, join, add, rm)")
+    parser.add_argument("raw_mpw", type=str, nargs="?", help="The action to perform (ls, join, add, rm)")
     parser.add_argument("-n", "--mname", type=str, metavar="Meeting Name",
                         help="Name of the Zoom meeting")
 
@@ -158,6 +162,17 @@ def main():
 
     # Parse the arguments.
     args = parser.parse_args()
+
+    """
+    The raw_mid and raw_mpw are used when you want to join a meeting directly without adding a meeting entry into
+    Cloe first.
+    
+    How to use it:
+    $ python3 ./cloe.py join 12345678 123000
+                                |        |_ This is the meeting password (raw_mpw)
+                                |_ This is the meeting id (raw_mid)    
+    
+    """
 
     """ Determine the action """
 
@@ -175,9 +190,14 @@ def main():
         elif args.mindex and 0 <= args.mindex < len(MEETING_DATA.keys()):
             join_meeting(list(MEETING_DATA.keys())[args.mindex])
 
+        # To join a meeting directly without saving meeting details to the zoom_meetings.json.
+        elif args.raw_mid:
+            join_meeting(meeting_id=args.raw_mid, meeting_password=args.raw_mpw)
+
         # If both inputs were not valid.
         else:
-            print("Invalid index or meeting name. Provide either --mname or --mindex to join a meeting.")
+            print("Invalid arguments. Provide either --mname or --mindex to join a stored meeting entry."
+                  "or provide a meeting id and meeting password (optional) to directly join a Zoom meeting.")
 
     # Add a new meeting entry.
     elif args.action == "add":
