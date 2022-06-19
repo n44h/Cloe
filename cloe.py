@@ -14,6 +14,9 @@ def load_meeting_data():
         with open(JSON_FILE_PATH, 'w') as f:
             print(f"{JSON_FILE_PATH} file created.")
 
+        # Return an empty dictionary.
+        return {}
+
     # Loading the JSON file containing the Zoom meeting information.
     with open(JSON_FILE_PATH, 'r') as json_file:
         meeting_data = json.load(json_file)
