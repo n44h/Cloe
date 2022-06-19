@@ -3,13 +3,14 @@ import argparse
 import json
 import subprocess
 
-# Relative path to the json file.
-JSON_FILE_PATH = "zoom_meetings.json"
+# Absolute path to the JSON file.
+JSON_FILE_NAME = "zoom_meetings.json"
+JSON_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), JSON_FILE_NAME)
 
 
 def load_meeting_data():
     # If the zoom_meetings.json file does not exist, create it.
-    if not os.path.exists(os.path.join(os.getcwd(), JSON_FILE_PATH)):
+    if not os.path.exists(JSON_FILE_PATH):
         # Creating the file.
         with open(JSON_FILE_PATH, 'w') as f:
             print(f"{JSON_FILE_PATH} file created.")
