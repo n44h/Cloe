@@ -29,8 +29,8 @@ Cloe is a CLI tool to join Zoom meetings on the Zoom desktop client. Cloe also m
 
 ## Commands
 #### Cloe performs 4 actions:
-
-`ls`, `join`, `add`, and `rm`  
+  
+`add`, `join`, `ls`, and `rm`  
   
 ### 1. Add a new meeting entry for Cloe to remember
 Add a new Zoom meeting that does not require a password:  
