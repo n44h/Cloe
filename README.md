@@ -9,7 +9,7 @@ Cloe is a CLI tool to join Zoom meetings on the Zoom desktop client. Cloe also m
 
 #### Cloe takes 4 arguments:  
 
-`--mname`  - meeting name (short)  
+`--mname`  - meeting name   
 
 `--mindex` - meeting index (the index position of the meeting in the zoom_meetings.json file)  
 
