@@ -1,7 +1,7 @@
 # Cloe
 Cloe is a CLI tool to join Zoom meetings on the Zoom desktop client. Cloe also makes it convenient to join recurring meetings using just a unique meeting name, so that you don't have to type in the meeting ID and password every time.    
 
-**Note**: This tool is made for Linux and MacOS. It will not work on Windows.
+**Note**: This tool is made for Linux and MacOS. It will not work on Windows (yet).
 
 **Requirements**: `python 3.5` or higher is required to run the `cloe.py` script.  
 
@@ -65,12 +65,12 @@ Join a saved meeting using the meeting index:
 `$ python3 ./cloe.py join -I <meeting-index>`  
      
 
-### 3. View stored meeting entries
-List stored meeting entries:  
+### 3. View saved meeting entries
+List all the saved meeting entries:  
 `$ python3 ./cloe.py ls`  
   
 
-### 4. Remove a stored meeting entry
+### 4. Remove a saved meeting entry
 Remove a meeting entry:  
 `$ python3 ./cloe.py rm -n <meeting-name>`  
   
@@ -85,7 +85,7 @@ You can just type in: `cloe join -n my-personal-meeting`
 ### For Linux: 
 Step 1: Open the Terminal and cd to the home directory.  
 
-Step 2: Run `ls -a` and check if there is the `.bashrc` file.    
+Step 2: Run `ls -a` and check if there is a `.bashrc` file.    
 
 Step 3: If the `.bashrc` file does not exist, create it by running `touch .bashrc` in the Terminal.   
 
