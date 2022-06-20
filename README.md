@@ -11,12 +11,15 @@ Cloe is a CLI tool to join Zoom meetings on the Zoom desktop client. Cloe also m
 
 `--mname`  - meeting name   
 
-`--mindex` - meeting index (the index position of the meeting in the zoom_meetings.json file)  
+`--mindex` - meeting index   
 
 `--mid`    - meeting ID  
 
 `--mpw`    - meeting password (optional)  
- 
+
+**Note**: The meeting index can be found by listing the saved meeting entries; refer to _3. View saved meeting entries_.   
+  
+  
 #### Flags for keyword arguments 
 
 `--mname`  -> `-n`  
