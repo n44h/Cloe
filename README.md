@@ -1,10 +1,9 @@
 # Cloe
-Cloe is a CLI tool to store Zoom meeting details and join meetings on the Zoom desktop client.   
-It can also remember meeting information to make it convenient to join meetings in the future without having to type in the meeting ID and password every time.  
+Cloe is a CLI tool to join Zoom meetings on the Zoom desktop client. Cloe also makes it convenient to join recurring meetings using just a unique meeting name, so that you don't have to type in the meeting ID and password every time.    
 
 **Note**: This tool is made for Linux and MacOS. It will not work on Windows.
 
-**Requirements**: Your system should have `python 3.5` or higher to run the `cloe.py` script.  
+**Requirements**: `python 3.5` or higher is required to run the `cloe.py` script.  
 
 ## Keyword Arguments
 
