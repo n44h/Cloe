@@ -2,9 +2,12 @@ import os
 import argparse
 import json
 import subprocess
+import platform
+import sys
 
 # Absolute path to the JSON file.
 JSON_FILE_NAME = "zoom_meetings.json"
+# Getting parent path and joining it with the JSON file name.
 JSON_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), JSON_FILE_NAME)
 
 
@@ -18,6 +21,12 @@ def load_meeting_data():
         # Return an empty dictionary.
         return {}
 
+    # Or if its empty, return an empty dictionary.
+    elif os.path.getsize(JSON_FILE_PATH) == 0:
+        # Return an empty dictionary.
+        return {}
+
+    # Else, if the JSON file exists, and it is not empty, return the meeting data.
     # Loading the JSON file containing the Zoom meeting information.
     with open(JSON_FILE_PATH, 'r') as json_file:
         meeting_data = json.load(json_file)
@@ -48,29 +57,30 @@ def add_meeting_entry(meeting_name: str,
     """
     # Basic input validation. Checks if inputs are None or "".
     if meeting_name is False:
-        print("Invalid value for meeting name parameter.")
+        print("\nInvalid value for meeting name parameter.\n")
         # Indicate operation failure.
         return False
 
     if meeting_id is False:
-        print("Invalid value for meeting ID parameter.")
+        print("\nInvalid value for meeting ID parameter.\n")
         # Indicate operation failure.
         return False
 
     # Check if the meeting_name contains any whitespaces. meeting names should not contain whitespaces.
     if ' ' in meeting_name:
-        print("Meeting Names should not contain spaces. Use hyphens ('-') or underscores ('_') instead")
+        print("\nMeeting Names should not contain spaces. Use hyphens ('-') or underscores ('_') instead.\n")
+        return False
 
     """ If the meeting name already exists """
     if meeting_name in MEETING_DATA.keys():
-        response = input(f"Meeting Name \"{meeting_name}\" already exists." 
+        response = input(f"\nMeeting Name \"{meeting_name}\" already exists."
                          "\nDo you want to overwrite the existing entry? [N/y]: ")
 
-        if response.lower() != 'y':
-            print("Add operation aborted.")
+        if response.lower() not in ['y', 'yes']:
+            print("\nAdd operation aborted.\n")
             return False
         else:
-            print(f"Overwriting entry for meeting: {meeting_name}")
+            print(f"\nOverwriting entry for meeting: \"{meeting_name}\"\n")
 
     # Creating a new dictionary entry for the meeting.
     MEETING_DATA[meeting_name] = {"meeting_id": meeting_id,
@@ -80,7 +90,7 @@ def add_meeting_entry(meeting_name: str,
     dump_meeting_data_to_json()
 
     # Indicate successful operation.
-    print(f"New meeting \"{meeting_name}\" added successfully.")
+    print(f"\nNew saved meeting \"{meeting_name}\" added successfully.\n")
     return True
 
 
@@ -93,50 +103,97 @@ def remove_meeting_entry(meeting_name: str = None) -> bool:
     """
     # Validation.
     if meeting_name is None:
-        print("Invalid meeting name parameter.")
+        print("\nInvalid meeting name parameter.\n")
         return False
 
     # If the meeting name doesn't exist.
     if meeting_name not in MEETING_DATA.keys():
-        print(f"Meeting entry with name \"{meeting_name}\" does not exist.")
+        print(f"\nMeeting entry with name \"{meeting_name}\" does not exist.\n")
         return False
 
-    # Removing the entry.
-    MEETING_DATA.pop(meeting_name)
+    # Confirmation prompt.
+    confirm = input(f"\nConfirm that you want to remove \"{meeting_name}\" from your saved meetings? [N/y]: ")
 
-    # Dump modified meeting data into zoom_meetings.json file.
-    dump_meeting_data_to_json()
+    # If user did not confirm operation.
+    if confirm.lower() not in ['y', 'yes']:
+        print("\nRemove operation aborted.\n")
+        return False
 
-    # Indicate successful operation.
-    print(f"Meeting entry \"{meeting_name}\" removed successfully.")
-    return True
+    # If user confirmed remove operation.
+    else:
+        # Removing the entry.
+        MEETING_DATA.pop(meeting_name)
+
+        # Dump modified meeting data into zoom_meetings.json file.
+        dump_meeting_data_to_json()
+
+        # Indicate successful operation.
+        print(f"\nMeeting entry \"{meeting_name}\" removed successfully.\n")
+        return True
 
 
 def print_meeting_names():
-    print("\n-> Stored Meeting entries: \n")
+    print("\n-> Saved Meeting entries: \n")
 
     # Print out all the meeting names.
     for index, meeting_name in enumerate(MEETING_DATA.keys()):
-        print(f"{index}) {meeting_name}")
+        meeting_id = MEETING_DATA[meeting_name]['meeting_id']
+        meeting_pw = MEETING_DATA[meeting_name]['password'] if MEETING_DATA[meeting_name]['password'] else '-nil-'
+
+        # Print meeting details.
+        print(f"{index}) {meeting_name}"
+              f"\n\tMeeting ID: {meeting_id}"
+              f"\n\tPassword  : {meeting_pw}\n")
 
     # Spacing
     print("\n")
 
 
 def join_meeting(meeting_name: str = None, meeting_id: str = None, meeting_password: str = None):
-    # If meeting_id is not provided, get it from MEETING_DATA.
+    # If meeting_id is not provided, get it from MEETING_DATA using meeting_name.
     if meeting_id is None:
         meeting_id = MEETING_DATA[meeting_name]["meeting_id"]
 
-    # If meeting_password is not provided, get it from MEETING_DATA.
+    # If meeting_password is not provided, get it from MEETING_DATA using meeting_name.
     if meeting_password is None:
         meeting_password = MEETING_DATA[meeting_name]["password"]
 
-    # Building the Zoom command. Only attach the password section if the meeting has a password.
+    # Building the Zoom command. Only attaching the password section if the meeting has a password.
     command = f'zoommtg://zoom.us/join?confno={meeting_id}' + (f'&pwd={meeting_password}' if meeting_password else "")
 
-    # Running the shell command.
-    process = subprocess.run(['xdg-open', command])
+    # Printing status message.
+    print("\nLaunching Zoom...")
+
+    # Check the operating system.
+    current_os = platform.system().lower()
+    if "linux" in current_os:
+        # Running the shell command for Linux.
+        process = subprocess.run(['xdg-open', command])
+
+    elif "darwin" in current_os:
+        # Running the shell command for macOS.
+        process = subprocess.run(['open', command])
+
+    elif "windows" in current_os:
+        # Running the shell command for Windows.
+        process = subprocess.run(['start', command])
+
+    # If the operating system is unrecognized.
+    else:
+        print("\nFailed to launch Zoom. Unrecognized Operating System. \nExiting with non-zero exit code.\n")
+        sys.exit(1)
+
+    # Print success message if Zoom was launched successfully.
+    if process.returncode == 0:
+        print("\nYou have successfully joined the Zoom meeting.\n")
+        sys.exit(0)
+
+    # Print failure message.
+    else:
+        print("\nFailed to launch Zoom."
+              "\nPlease ensure that you have installed and are logged into the Zoom Desktop Client.\n")
+        # Exit with non-zero exit code.
+        sys.exit(2)
 
 
 def main():
@@ -196,16 +253,17 @@ def main():
 
         # If both inputs were not valid.
         else:
-            print("Invalid arguments. Provide either --mname or --mindex to join a stored meeting entry."
-                  "or provide a meeting id and meeting password (optional) to directly join a Zoom meeting.")
+            print("\nInvalid arguments."
+                  "\nProvide a meeting ID and meeting password (optional) to quick join a Zoom meeting."
+                  "\n Or provide either --mname or --mindex to join a saved Zoom meeting.\n")
 
     # Add a new meeting entry.
     elif args.action == "add":
         # Validate that all the required arguments were provided.
-        if all([args.mname, args.mid, args.mpw]):
+        if all([args.mname, args.mid]):
             add_meeting_entry(meeting_name=args.mname, meeting_id=args.mid, meeting_password=args.mpw)
         else:
-            print("Missing arguments for add command. Provide --mname, --mid and --mpw arguments.")
+            print("\nMissing arguments for add command. Provide arguments --mname, --mid and --mpw (if required).\n")
 
     # Remove a meeting entry.
     elif args.action == "rm":
@@ -213,7 +271,7 @@ def main():
         if args.mname:
             remove_meeting_entry(meeting_name=args.mname)
         else:
-            print("Missing arguments for rm command. Provide --mname argument.")
+            print("\nMissing arguments for rm command. Provide --mname argument.\n")
 
     # Invalid command
     else:
