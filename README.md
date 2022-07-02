@@ -5,7 +5,7 @@ This tool works on Linux, macOS, and Windows.
 
 **Requirements**: _Python 3.5_ or higher is required to run the `cloe.py` script.  
 
-**Security Warning**: Note that the saved meeting IDs and meeting passwords are stored in a JSON file. If this is considered too risky by you, **do not** save your meeting details in Cloe.   
+**Security Warning**: Note that the saved meeting IDs and meeting passwords are stored in a JSON file. If you consider this too risky, **do not** save your meeting details in Cloe.   
 
 ___
 
@@ -156,7 +156,7 @@ ___
 
 And thats it, you've set up a clean short alias to run Cloe.  
 
-From now on, you can run your commands for Cloe like this:  
+From now on, you can run your commands for Cloe like so:  
 ```
 $ cloe join -n <meeting-name>
 ```
