@@ -121,7 +121,7 @@ You can just type in:
 $ cloe join -n my-personal-meeting  
 ```  
 
-### For Linux: 
+### Creating an Alias in Linux: 
 * **Step 1:** Open the Terminal and cd to the home directory.  
 
 * **Step 2:** Run `ls -a` and check if there is a `.bashrc` file.    
@@ -138,7 +138,7 @@ $ cloe join -n my-personal-meeting
 
 ___
 
-### For MacOS:  
+### Creating an Alias in MacOS:  
 * **Step 1:** Open the Terminal and cd to the home directory.  
 
 * **Step 2:** Run `ls -a` and check if there is the `.zshrc` file.    
