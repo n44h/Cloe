@@ -153,6 +153,7 @@ ___
 
 * **Step 7:** Open up a fresh Terminal and run the command `source ~/.zshrc` to put into effect the changes you made.  
 
+___
 
 And thats it, you've set up a short, convenient alias to run Cloe.  
 
