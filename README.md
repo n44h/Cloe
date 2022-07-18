@@ -1,5 +1,5 @@
 # Cloe
-Cloe is a CLI tool to join Zoom meetings on the Zoom desktop client. Cloe also makes it convenient to join recurring meetings using just a unique meeting name, so that you don't have to type in the meeting ID and password every time.     
+Cloe is a CLI tool to join Zoom meetings through the Zoom desktop client. Cloe also makes it convenient to join recurring meetings using just a unique meeting name, so that you don't have to type in the meeting ID and password every time.     
 
 This tool works on Linux, macOS, and Windows.  
 
