@@ -124,13 +124,13 @@ $ cloe join -n my-personal-meeting
 ### Creating an Alias in Linux: 
 * **Step 1:** Open the Terminal and cd to the home directory.  
 
-* **Step 2:** Run `ls -a` and check if there is a `.bashrc` file.    
+* **Step 2:** Enter `ls -a` and check if there is a `.bashrc` file.    
 
 * **Step 3:** If the `.bashrc` file does not exist, create it by running `touch .bashrc` in the Terminal.   
 
 * **Step 4:** Now run the command `nano .bashrc` to open up the file in the nano editor.  
 
-* **Step 5:** To the last line in the file, add the the line `alias cloe='python3 path/to/cloe.py'`. Make sure to replace `path/to/cloe.py` with the path to wherever you stored the `cloe.py` script on your system.  
+* **Step 5:** On a fresh line at the end of the file, add the line `alias cloe='python3 path/to/cloe.py'`. Make sure to replace `path/to/cloe.py` with the path to wherever you stored the `cloe.py` script on your system.  
 
 * **Step 6:** Press `Ctrl` + `X` and then press `Y` to save the changes you made to the `.bashrc` file. Now close the Terminal.  
 
@@ -141,13 +141,13 @@ ___
 ### Creating an Alias in MacOS:  
 * **Step 1:** Open the Terminal and cd to the home directory.  
 
-* **Step 2:** Run `ls -a` and check if there is the `.zshrc` file.    
+* **Step 2:** Enter `ls -a` and check if there is the `.zshrc` file.    
 
 * **Step 3:** If the `.zshrc` file does not exist, create it by running `touch .zshrc` in the Terminal.     
 
 * **Step 4:** Now run the command `nano .zshrc` to open up the file in the nano editor.  
 
-* **Step 5:** To the last line in the file, add the the line `alias cloe='python3 path/to/cloe.py'`. Make sure to replace `path/to/cloe.py` with the path to wherever you stored the `cloe.py` script on your system.  
+* **Step 5:** On a fresh line at the end of the file, add the line `alias cloe='python3 path/to/cloe.py'`. Make sure to replace `path/to/cloe.py` with the path to wherever you stored the `cloe.py` script on your system.  
 
 * **Step 6:** Press `Cmd` + `X` and then press `Y` to save the changes you made to the `.zshrc` file. Now close the Terminal.  
 
