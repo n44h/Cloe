@@ -25,12 +25,12 @@ ___
 
 #### Short Arguments 
 
-Long option | Short option  
----- | ----
-`--mname` | `-n`  
-`--mindex` | `-I`  
-`--mid` | `-i`  
-`--mpw` | `-p`  
+| Long option | Short option |
+|-------------|--------------|
+| `--mname`   | `-n`         |
+| `--mindex`  | `-I`         |
+| `--mid`     | `-i`         |
+| `--mpw`     | `-p`         |
 
 ___
 
@@ -132,7 +132,7 @@ $ cloe join -n my-personal-meeting
 
 * **Step 5:** On a fresh line at the end of the file, add the line `alias cloe='python3 path/to/cloe.py'`. Make sure to replace `path/to/cloe.py` with the path to wherever you stored the `cloe.py` script on your system.  
 
-* **Step 6:** Press `Ctrl` + `X` and then press `Y` to save the changes you made to the `.bashrc` file. Now close the Terminal.  
+* **Step 6:** Press <kbd>Ctrl</kbd> + <kbd>X</kbd> and then press <kbd>Y</kbd> to save the changes you made to the `.bashrc` file. Now close the Terminal.  
 
 * **Step 7:** Open up a fresh Terminal and run the command `source ~/.bashrc` to put into effect the changes you made.  
 
@@ -149,7 +149,7 @@ ___
 
 * **Step 5:** On a fresh line at the end of the file, add the line `alias cloe='python3 path/to/cloe.py'`. Make sure to replace `path/to/cloe.py` with the path to wherever you stored the `cloe.py` script on your system.  
 
-* **Step 6:** Press `Cmd` + `X` and then press `Y` to save the changes you made to the `.zshrc` file. Now close the Terminal.  
+* **Step 6:** Press <kbd>Cmd</kbd> + <kbd>X</kbd> and then press <kbd>Y</kbd> to save the changes you made to the `.zshrc` file. Now close the Terminal.  
 
 * **Step 7:** Open up a fresh Terminal and run the command `source ~/.zshrc` to put into effect the changes you made.  
 
