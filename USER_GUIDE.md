@@ -56,7 +56,7 @@ ___
     ```  
 
 * Join a saved meeting using the meeting index:  
-    ```
+    ```commandline
     $ cloe join <meeting-index>  
     ```  
 
@@ -81,14 +81,14 @@ ___
 
 ### 3. List saved meetings  
 
-* List the **names** and **IDs** of all the saved meetings:  
+* List the **names** of all the saved meetings:  
     ```commandline
     $ cloe ls
     ```
   
-* List only the **names** all the saved meetings:  
+* List the **names** and **IDs** of all the saved meetings:  
     ```commandline
-    $ cloe ls -n
+    $ cloe ls -i
     ```  
   
 * List the **names**, **IDs**, and **passwords** of all the saved meetings:  
