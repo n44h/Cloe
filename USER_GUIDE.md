@@ -59,7 +59,6 @@ ___
     ```
     $ cloe join <meeting-index>  
     ```  
-&nbsp;
 
 #### Usage:
 ```commandline
