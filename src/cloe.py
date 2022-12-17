@@ -49,7 +49,7 @@ def dump_meeting_data(meeting_dir: MeetingDirectory) -> None:
         pkl.dump(meeting_dir, f)
 
 
-def list_meeting_names(meeting_directory: MeetingDirectory, only_names: bool = False, show_passwords: bool = False):
+def list_meeting_names(meeting_directory: MeetingDirectory, show_ids: bool = False, show_passwords: bool = False):
     print("\n-> Saved Meetings:")
 
     # Check if meeting directory is empty.
@@ -63,13 +63,13 @@ def list_meeting_names(meeting_directory: MeetingDirectory, only_names: bool = F
         # Print meeting name.
         print(f"\n{index}) {meeting.name}")
 
-        # If only_names is False, print meeting ID.
-        if not only_names:
+        # If show_ids or show_passwords is True, print meeting IDs.
+        if show_ids or show_passwords:
             print(f"\tMeeting ID : {meeting.id}")
 
-            # If show_passwords is True, print meeting passwords.
-            if show_passwords:
-                print(f"\tPassword   : {meeting.password}")
+        # If show_passwords is True, print meeting passwords.
+        if show_passwords:
+            print(f"\tPassword   : {meeting.password}")
 
     # Spacing
     print("\n")
@@ -105,11 +105,11 @@ def main():
                         help="Flag used to quick join a meeting"
                         )
 
-    parser.add_argument("-n", "--only-names",
-                        dest="only_names",
+    parser.add_argument("-i", "--show-ids",
+                        dest="show_ids",
                         required=False,
                         action='store_true',
-                        help="Flag to indicate only meeting names must be shown when listing saved meetings"
+                        help="Flag to indicate whether meetings IDs must be shown when listing saved meetings"
                         )
 
     parser.add_argument("-p", "--show-passwords",
@@ -127,7 +127,7 @@ def main():
     # Assess the command.
     # 1. List saved meetings.
     if args.command in ["ls", "list"]:
-        list_meeting_names(meeting_directory, args.only_names, args.show_passwords)
+        list_meeting_names(meeting_directory, args.show_ids, args.show_passwords)
         op_success = True
 
     # 2. Join a meeting.
