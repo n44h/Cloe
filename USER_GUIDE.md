@@ -3,7 +3,7 @@
 User guide covers the commands in Cloe v2.0.0+.  
 
 This guide assumes that you have set up an alias for Cloe. If you have not set up an 
-alias for Cloe, just replace "cloe" with "python3 path/to/cloe.py" in the following 
+alias for Cloe, just replace `cloe` with `python3 path/to/cloe.py` in the following 
 commands.
 
 ___
