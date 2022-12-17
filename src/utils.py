@@ -2,6 +2,15 @@ import platform
 import subprocess
 
 
+FAILURE_MESSAGE = """
+Failed to launch Zoom.
+Please ensure that you have:
+    1. installed the latest version of the Zoom Desktop Client
+    2. logged into the Zoom Desktop Client
+    3. provided a valid meeting ID (and correct password, if required)
+"""
+
+
 def execute(command: str = None) -> int | None:
     """
     Function to execute commands in the shell.
@@ -78,30 +87,6 @@ class Meeting:
         elif isinstance(password, str):
             self.password = password
 
-    def join(self) -> bool:
-        """
-        Join the Zoom meeting in the Zoom Desktop Client.
-
-        :return: True if Zoom meeting join successfully.
-        """
-
-        # Building the Zoom command.
-        command = f"zoommtg://zoom.us/join?confno={self.id}{f'&pwd={self.password}' if self.password else ''}"
-
-        # Printing status message.
-        print("\nLaunching Zoom Desktop Client...")
-
-        # Execute the command.
-        return_code = execute(command)
-
-        # Analyze return code.
-        if return_code == 0:
-            print("\nSuccessfully joined Zoom meeting.\n")
-            return True
-        else:
-            print("\nFailed to launch Zoom. Exiting with non-zero exit code.\n")
-            return False
-
     def __eq__(self, other):
         # Meeting names are unique. Check if the 2 Meeting instances have the same meeting name.
         return self.name == other.name
@@ -118,8 +103,9 @@ class MeetingDirectory:
         # List of Meeting instances.
         self.meetings = []
 
-        # Number of Meetings stored in the MeetingDirectory instance.
-        self.size = 0
+    @property
+    def size(self):
+        return len(self.meetings)
 
     def add(self, name: str, m_id: str, password: str = None) -> (bool, str):
         """
@@ -129,44 +115,46 @@ class MeetingDirectory:
         :param m_id: meeting ID of the new meeting
         :param password: password of the new meeting, if it has one
 
-        :return: True if meeting was added successfully
+        :return: True if meeting was added successfully, and a message
         """
 
-        # Input validation. Check if the essential inputs are None or empty strings.
+        # Check if meeting name is an empty string or None.
         if not name:
-            return False, "\nInvalid value for meeting name parameter.\n"
-
-        if not m_id:
-            return False, "\nInvalid value for meeting ID parameter.\n"
+            return False, "Invalid meeting name"
 
         # Replace any whitespaces in the meeting name with '-'.
         if ' ' in name:
             name = name.replace(' ', '-')
 
-        # Removing non-numeric characters from meeting_id.
-        m_id = ''.join(c for c in m_id if c.isdigit())
+        # Removing '-'s from the meeting id.
+        if m_id is not None:
+            m_id = m_id.replace('-', '')
+
+        # Check if meeting id is an empty string or None.
+        if not m_id:
+            return False, "Invalid meeting ID"
 
         # Check if the meeting name already exists.
         if name in self.meeting_names:
             # If the meeting name already exists, get user confirmation to update existing meeting data.
             print(f"\nA meeting with the name \"{name}\" already exists.")
-            response = input("Do you want to update the existing meeting entry? [N/y]: ")
+            response = input(" > Do you want to update the existing meeting entry? [N/y]: ")
 
             # If the user chooses to abort the operation.
             if response.lower() not in ['y', 'yes']:
-                return False, "\nOperation aborted.\n"
+                return False, "Add operation aborted"
 
             # Update the meeting.
-            return self.update(name, name, m_id, password)
+            return self.update(name, m_id, password)
 
         else:
             # Adding the new meeting.
             self.meeting_names.append(name)
             self.meetings.append(Meeting(name, m_id, password))
 
-            return True, f"\nAdded new meeting \"{name}\".\n"
+            return True, f"Added new meeting \"{name}\""
 
-    def update(self, old_name, new_name, new_id, new_password) -> bool:
+    def update(self, new_name, new_id, new_password, old_name: str = None) -> (bool, str):
         """
         Update an existing Meeting instance in the MeetingDirectory.
 
@@ -175,32 +163,31 @@ class MeetingDirectory:
         :param new_id: new ID of the meeting
         :param new_password: new password of the meeting, if it has one
 
-        :return: True if meeting was updated successfully
+        :return: True if meeting was updated successfully, and a message
         """
 
-        # Input validation. Check if the essential inputs are None or empty strings.
+        # Check if new meeting name is an empty string or None.
         if not new_name:
-            print("\nInvalid value for meeting name.\n")
-            return False
+            return False, "Invalid meeting name"
 
-        if not new_id:
-            print("\nInvalid value for meeting ID.\n")
-            return False
-
-        # Replace any whitespaces in the meeting name with '-'.
+        # Replace any whitespaces in the new meeting name with '-'.
         if ' ' in new_name:
             new_name = new_name.replace(' ', '-')
-            print("\nReplaced whitespaces in meeting name with '-'.\n")
 
-        # Removing non-numeric characters from meeting_id.
-        new_id = ''.join(c for c in new_id if c.isdigit())
+        # Removing '-'s from the new meeting id.
+        if new_id is not None:
+            new_id = new_id.replace('-', '')
 
-        # Check if the meeting name exists.
-        if new_name not in self.meeting_names:
-            print(f"\nMeeting with name \"{new_name}\" does not exist.\n")
-            return False
+        # Check if new meeting id is an empty string or None.
+        if not new_id:
+            return False, "Invalid meeting ID"
 
-        else:
+        # If the old name is None, assign it the value of new name (this is inconsequential).
+        if not old_name:
+            old_name = new_name
+
+        # Check if the old meeting name exists in the meeting directory.
+        if old_name in self.meeting_names:
             # Get index of the meeting.
             idx = self.meeting_names.index(old_name)
 
@@ -208,37 +195,33 @@ class MeetingDirectory:
             self.meeting_names[idx] = new_name
             self.meetings[idx] = Meeting(new_name, new_id, new_password)
 
-            return True
+            return True, f"Updated meeting \"{new_name}\""
 
-    def remove(self, name) -> bool:
+        else:
+            return False, f"Meeting with name \"{old_name}\" does not exist"
+
+    def remove(self, name) -> (bool, str):
         """
         Remove a meeting from the MeetingDirectory.
 
         :param name: name of the meeting to be removed
 
-        :return: True if meeting was removed successfully
+        :return: True if meeting was removed successfully, and a message
         """
 
         # Validation.
         if name is None:
-            print("\nMeeting entry cannot be None.\n")
-            return False
+            return False, "Meeting name cannot be None"
 
         # If the meeting name doesn't exist.
         if name not in self.meeting_names:
-            print(f"\nMeeting entry \"{name}\" does not exist.\n")
-            return False
+            return False, f"Meeting \"{name}\" does not exist"
 
         # Confirmation prompt.
-        confirm = input(f"\nConfirm that you want to remove \"{name}\"? [N/y]: ")
+        confirm = input(f"\n > Confirm that you want to remove \"{name}\"? [N/y]: ")
 
-        # If user did not confirm operation.
-        if confirm.lower() not in ['y', 'yes']:
-            print("\nRemove operation aborted.\n")
-            return False
-
-        # If user confirmed remove operation.
-        else:
+        # If user confirmed the remove operation.
+        if confirm.lower() in ['y', 'yes']:
             # Get the index of the meeting.
             idx = self.meeting_names.index(name)
 
@@ -246,7 +229,76 @@ class MeetingDirectory:
             self.meeting_names.pop(idx)
             self.meetings.pop(idx)
 
-            return True
+            return True, f"Removed meeting \"{name}\""
+
+        # If user did not confirm the remove operation.
+        else:
+            return False, "Remove operation aborted"
+
+    def join(self, key: str | int) -> (bool, str):
+        """
+        Join the Zoom meeting in the Zoom Desktop Client.
+
+        :return: True if the meeting is joined successfully.
+        """
+
+        # Check if key is None.
+        if key is None:
+            return False, "Invalid key"
+
+        # Get the meeting instance.
+        # Regardless of whether the key is the meeting name or index, the code below will work.
+        # See: MeetingDirectory.__getitem__() to understand how this is handled.
+        try:
+            meeting = self[key]
+        except KeyError:
+            return False, f"Meeting name \"{key}\" does not exist"
+        except IndexError:
+            return False, f"Invalid meeting index {key}"
+
+        # Building the Zoom command.
+        command = f"zoommtg://zoom.us/join?confno={meeting.id}{f'&pwd={meeting.password}' if meeting.password else ''}"
+
+        # Execute the command.
+        return_code = execute(command)
+
+        # Analyze return code.
+        if return_code == 0:
+            return True, "Launched Zoom Meeting Client"
+
+        else:
+            return False, FAILURE_MESSAGE
+
+    @staticmethod
+    def quick_join(m_id: str, password: str = None) -> (bool, str):
+        """
+        Quick join a meeting without saving it to Cloe.
+
+        :param m_id: meeting ID
+        :param password: meeting password, if one is required
+
+        :return: True if the meeting was joined successfully
+        """
+
+        # Removing '-'s from the meeting id.
+        if m_id is not None:
+            m_id = m_id.replace('-', '')
+
+        if not m_id:
+            return False, "Invalid meeting ID parameter"
+
+        # Building the Zoom command.
+        command = f"zoommtg://zoom.us/join?confno={m_id}{f'&pwd={password}' if password else ''}"
+
+        # Execute the command.
+        return_code = execute(command)
+
+        # Analyze return code.
+        if return_code == 0:
+            return True, "Launched Zoom Meeting Client"
+
+        else:
+            return False, FAILURE_MESSAGE
 
     def get_meetings(self):
         return self.meetings
@@ -273,7 +325,7 @@ class MeetingDirectory:
 
         item can be a numeric index value or a key value (meeting name)
 
-        :param item: index or key
+        :param item: meeting index or name
 
         :return: Meeting instance
         """
