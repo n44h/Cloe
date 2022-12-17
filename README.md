@@ -20,7 +20,8 @@ $ python3 path/to/cloe.py join my-meeting
 You can just type in:  
 ```commandline
 $ cloe join my-meeting  
-```  
+```
+___
 
 ### Creating an Alias in Linux: 
 1. Open the Terminal and cd to the home directory.  
@@ -36,9 +37,9 @@ $ cloe join my-meeting
 6. Press <kbd>Ctrl</kbd> + <kbd>X</kbd> and then press <kbd>Y</kbd> to save the changes you made to the `.bashrc` file. Now close the Terminal.  
 &nbsp;  
 7. Open up a fresh Terminal and run the command `source ~/.bashrc` to put into effect the changes you made.  
-&nbsp;  
+___
 
-### Creating an Alias in MacOS:  
+### Creating an Alias in macOS:  
 1. Open the Terminal and cd to the home directory.  
 &nbsp;  
 2. Enter `ls -a` and check if there is the `.zshrc` file.    
@@ -52,7 +53,7 @@ $ cloe join my-meeting
 6. Press <kbd>Cmd</kbd> + <kbd>X</kbd> and then press <kbd>Y</kbd> to save the changes you made to the `.zshrc` file. Now close the Terminal.  
 &nbsp;  
 7. Open up a fresh Terminal and run the command `source ~/.zshrc` to put into effect the changes you made.  
-&nbsp;  
+___
 
 From now on, you can run your commands for Cloe like so:  
 ```commandline
