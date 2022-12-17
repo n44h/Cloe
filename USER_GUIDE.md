@@ -61,7 +61,7 @@ ___
     ```  
 &nbsp;
 
-##### Usage:
+#### Usage:
 ```commandline
 $ cloe join -q 123-4567-8901 
 ```  
