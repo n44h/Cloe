@@ -1,8 +1,9 @@
 import os
+import sys
 import argparse
 import dill as pkl
 
-from utils import Meeting, MeetingDirectory
+from utils import MeetingDirectory
 
 
 # Cloe root directory absolute path.
@@ -13,9 +14,6 @@ MEETING_DIR_PKL_FILENAME = "cloe.mtgdir"
 
 # Getting parent path and joining it with the file name.
 MEETING_DIR_PKL_FILEPATH = os.path.join(ROOT_DIR, "res", MEETING_DIR_PKL_FILENAME)
-
-# MeetingDirectory instance.
-MEETING_DIR = MeetingDirectory()
 
 
 def load_meeting_data() -> MeetingDirectory:
@@ -51,192 +49,86 @@ def dump_meeting_data(meeting_dir: MeetingDirectory) -> None:
         pkl.dump(meeting_dir, f)
 
 
-def add_meeting(name: str, m_id: str, password: str = None) -> bool:
-    """
-    Add a meeting to Cloe.
+def list_meeting_names(meeting_directory: MeetingDirectory, only_names: bool = False, show_passwords: bool = False):
+    print("\n-> Saved Meetings:")
 
-    :param name: name of the new meeting room
-    :param m_id: meeting ID of the new meeting
-    :param password: password of the new meeting, if one is required
-
-    :return: True if meeting was added successfully
-    """
-
-    success, msg = MEETING_DIR.add(name, m_id, password)
-
-    if success:
-        # Serialize the updated meeting directory to file.
-        dump_meeting_data(MEETING_DIR)
-
-        # Print operation success message.
-        print(msg)
-        return True
-
-    else:
-        # Print operation failure message.
-        print(msg)
-        return False
-
-
-def remove_meeting(name: str = None) -> bool:
-    """
-    Remove a meeting from Cloe.
-
-    :param name: name of the meeting to be removed
-
-    :return: True if meeting was removed successfully
-    """
-
-    if MEETING_DIR.remove(name):
-        # Print operation success message.
-        print(f"\nRemoved meeting \"{name}\".\n")
-        return True
-
-    else:
-        # Print operation failure message.
-        print(f"\nCould not remove meeting \"{name}\".\n")
-        return False
-
-
-def join_meeting(key: str | int) -> bool:
-    """
-    Join a saved meeting using the meeting name or the meeting's list index.
-
-    :param key: the meeting name or index of the meeting to join.
-
-    :return: True if the meeting was joined successfully
-    """
-
-    # Check if key is None.
-    if key is None:
-        return False
-
-    # Join the meeting. Regardless of whether the key is the meeting name or index, the code below will work.
-    # See: MeetingDirectory.__getitem__() to understand how this is handled.
-    return_code = MEETING_DIR[key].join()
-
-    # Print success message if meeting was joined successfully.
-    if return_code == 0:
-        print("\nSuccessfully joined Zoom meeting.\n")
-        return True
-
-    # Print failure message.
-    else:
-        print("\nFailed to launch Zoom."
-              "\nPlease ensure that you:"
-              "\n  1. have installed the latest version of the Zoom Desktop Client"
-              "\n  2. logged into the Zoom Desktop Client\n")
-
-        return False
-
-
-def quick_join_meeting(m_id: str, password: str = None) -> bool:
-    """
-    Join a meeting without saving it to Cloe.
-
-    :param m_id: meeting ID
-    :param password: meeting password, if one is required
-
-    :return: True if the meeting was joined successfully
-    """
-
-    if not m_id:
-        print("\nInvalid value for meeting ID parameter.\n")
-        return False
-
-    # Removing non-numeric characters from meeting_id.
-    m_id = ''.join(c for c in m_id if c.isdigit())
-
-    # Create a temporary Meeting instance.
-    meeting = Meeting("", m_id, password)
-
-    # Join the meeting.
-    return_code = meeting.join()
-
-    # Print success message if meeting was joined successfully.
-    if return_code == 0:
-        print("\nSuccessfully joined Zoom meeting.\n")
-        return True
-
-    # Print failure message.
-    else:
-        print("\nFailed to launch Zoom."
-              "\nPlease ensure that you have:"
-              "\n  1. installed the latest version of the Zoom Desktop Client"
-              "\n  2. logged into the Zoom Desktop Client\n"
-              "\n  3. provided a valid meeting ID (and correct password, if required)\n")
-
-        return False
-
-
-def print_meeting_names(only_names: bool = False, show_passwords: bool = False):
-    print("\n-> Saved Meetings: \n")
+    # Check if meeting directory is empty.
+    if len(meeting_directory) == 0:
+        print("\nNo saved meetings\n")
+        return
 
     # Print out all the meetings.
-    for index, meeting in enumerate(MEETING_DIR.get_meetings()):
+    for index, meeting in enumerate(meeting_directory.get_meetings()):
 
         # Print meeting name.
-        print(f"{index}) {meeting.name}")
+        print(f"\n{index}) {meeting.name}")
 
         # If only_names is False, print meeting ID.
         if not only_names:
-            print(f"\n\tMeeting ID: {meeting.id}")
+            print(f"\tMeeting ID : {meeting.id}")
 
             # If show_passwords is True, print meeting passwords.
             if show_passwords:
-                print(f"\n\tPassword  : {meeting.password}\n")
+                print(f"\tPassword   : {meeting.password}")
 
     # Spacing
     print("\n")
 
 
 def main():
+    # Load the serialized meeting directory from file.
+    meeting_directory = load_meeting_data()
+
+    # Set default values for operation success and msg.
+    op_success, msg = False, None
+
     # Initialize an argument parser.
     parser = argparse.ArgumentParser(description="Open Zoom meetings in the Zoom Desktop Client using the CLI.")
 
     # Adding arguments.
     parser.add_argument("command",
                         type=str,
-                        required=True,
-                        choices=['ls', 'list', 'join', 'add', 'rm', 'remove'],
-                        help="The command to perform (ls, join, add, rm)"
+                        choices=['ls', 'list', 'join', 'add', 'rm', 'remove', 'clear'],
+                        help="The command to perform (ls, join, add, rm, clear)"
                         )
 
-    parser.add_argument("pos-args",
-                        dest="positional",
+    parser.add_argument("positional",
                         type=str,
-                        required=False,
-                        nargs="?",
+                        nargs="*",
                         help="Positional arguments depending on the command."
                         )
 
-    parser.add_argument("-n", "--only-names",
-                        dest="only_name",
-                        type=bool,
+    parser.add_argument("-q", "--quick-join",
+                        dest="quick_join",
                         required=False,
                         action='store_true',
-                        metavar="List only meeting names",
+                        help="Flag used to quick join a meeting"
+                        )
+
+    parser.add_argument("-n", "--only-names",
+                        dest="only_names",
+                        required=False,
+                        action='store_true',
                         help="Flag to indicate only meeting names must be shown when listing saved meetings"
                         )
 
     parser.add_argument("-p", "--show-passwords",
                         dest="show_passwords",
-                        type=bool,
                         required=False,
                         action='store_true',
-                        metavar="List meeting passwords",
                         help="Flag to indicate whether passwords must be shown when listing saved meetings")
 
     # Parse the arguments.
     args = parser.parse_args()
 
     # Get number of positional arguments.
-    num_args = len(args.positional)
+    num_args = len(args.positional) if args.positional is not None else 0
 
     # Assess the command.
     # 1. List saved meetings.
     if args.command in ["ls", "list"]:
-        print_meeting_names(args.only_names, args.show_passwords)
+        list_meeting_names(meeting_directory, args.only_names, args.show_passwords)
+        op_success = True
 
     # 2. Join a meeting.
     elif args.command == "join":
@@ -251,50 +143,83 @@ def main():
 
             # 2.1 Join a saved meeting using meeting name.
             # Check if the meeting name exists.
-            if name in MEETING_DIR:
-                join_meeting(name)
+            if name in meeting_directory:
+                op_success, msg = meeting_directory.join(name)
 
             # 2.2 Join a saved meeting using meeting index.
             # Check if the index is valid.
-            elif MEETING_DIR.is_valid_index(index):
-                join_meeting(index)
+            elif meeting_directory.is_valid_index(index):
+                op_success, msg = meeting_directory.join(index)
 
             # 2.3 Quick join a meeting with the meeting ID.
+            elif args.quick_join:
+                op_success, msg = meeting_directory.quick_join(m_id=m_id)
+
             else:
-                quick_join_meeting(m_id=m_id)
+                op_success, msg = False, f"Invalid meeting name or index \"{args.positional[0]}\""
 
         # 2.4 Quick join a meeting with meeting ID and password.
         elif num_args == 2:
-            quick_join_meeting(m_id=args.positional[0], password=args.positional[1])
+            op_success, msg = meeting_directory.quick_join(m_id=args.positional[0], password=args.positional[1])
 
         # Invalid number of arguments (0 or >2).
         else:
-            print(f"\nError: \"join\" command expects 1 or 2 arguments but received {num_args}\n")
+            msg = f"Error: \"join\" command expects 1 or 2 arguments but received {num_args}"
 
     # 3. Add a new meeting.
     elif args.command == "add":
         # Check if correct number of arguments were provided.
         if num_args == 2:
-            add_meeting(name=args.positional[0], m_id=args.positional[1])
+            op_success, msg = meeting_directory.add(name=args.positional[0],
+                                                    m_id=args.positional[1])
 
         elif num_args == 3:
-            add_meeting(name=args.positional[0], m_id=args.positional[1], password=args.positional[2])
+            op_success, msg = meeting_directory.add(name=args.positional[0],
+                                                    m_id=args.positional[1],
+                                                    password=args.positional[2])
 
         else:
-            print(f"\nError: \"add\" command expects 2 or 3 arguments but received {num_args}\n")
+            msg = f"Error: \"add\" command expects 2 or 3 arguments but received {num_args}"
 
     # 4. Remove a meeting.
     elif args.command in ["rm", "remove"]:
         # Check if correct number of arguments were provided.
         if num_args == 1:
-            remove_meeting(name=args.positional[0])
+            op_success, msg = meeting_directory.remove(name=args.positional[0])
 
         else:
-            print(f"\nError: \"remove\" command expects 1 argument but received {num_args}\n")
+            msg = f"Error: \"remove\" command expects 1 argument but received {num_args}"
+
+    # 5. Clear all saved meetings.
+    elif args.command == 'clear':
+        # Confirmation prompt.
+        confirm = input(f"\n > Confirm that you want to remove all saved meetings from Cloe? [N/y]: ")
+
+        # If user confirmed the clear operation.
+        if confirm.lower() in ['y', 'yes']:
+            # Reinitialize meeting directory to fresh MeetingDirectory instance.
+            meeting_directory = MeetingDirectory()
+            op_success, msg = True, "Cleared all saved meetings"
+
+        # If user did not confirm the clear operation.
+        else:
+            op_success, msg = False, "Clear operation aborted"
 
     # Invalid command
     else:
-        print(f"\nUnknown command: {args.command}\n\n")
+        msg = f"Unknown command: {args.command}"
+
+    # Print message and serialize updated meeting directory.
+    if msg:
+        print(f"{msg}\n")
+
+    if op_success:
+        # Serialize the updated meeting directory to file.
+        dump_meeting_data(meeting_directory)
+        sys.exit(0)
+
+    else:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
