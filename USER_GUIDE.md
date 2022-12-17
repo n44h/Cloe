@@ -66,11 +66,16 @@ ___
 $ cloe join -q 123-4567-8901 
 ```  
 ```commandline
+$ cloe join -q 12345678901 pw1234
+``` 
+```commandline
 $ cloe join my-meeting 
 ```  
 ```commandline
 $ cloe join 4 
 ```  
+**Note**: The meeting ID is allowed to contain hyphens `-` ; 
+          Cloe will remove hyphens before performing any operation.   
 
 **Note**: The meeting index can be found by listing the saved meeting.
 ___  
