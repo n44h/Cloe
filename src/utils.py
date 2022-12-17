@@ -295,7 +295,7 @@ class MeetingDirectory:
 
         # Analyze return code.
         if return_code == 0:
-            return True, "Launched Zoom Meeting Client"
+            return True, "Launched Zoom Desktop Client"
 
         else:
             return False, FAILURE_MESSAGE
