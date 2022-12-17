@@ -9,7 +9,7 @@ from utils import Meeting, MeetingDirectory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Absolute path to the meeting data file.
-MEETING_DIR_PKL_FILENAME = "meeting_directory.pkl"
+MEETING_DIR_PKL_FILENAME = "cloe.mtgdir"
 
 # Getting parent path and joining it with the file name.
 MEETING_DIR_PKL_FILEPATH = os.path.join(ROOT_DIR, "res", MEETING_DIR_PKL_FILENAME)
