@@ -18,7 +18,7 @@ ___
 
 #### Cloe performs 5 actions:
 
-`add`, `join`, `ls`, `rm`, `clear`  
+`add`, `join`, `list`, `remove`, `reset`  
 
 ### 1. Save a new meeting for Cloe to remember  
 
@@ -83,23 +83,23 @@ ___
 
 * List the **names** of all the saved meetings:  
     ```commandline
-    $ cloe ls
+    $ cloe list
     ```
   
 * List the **names** and **IDs** of all the saved meetings:  
     ```commandline
-    $ cloe ls -i
+    $ cloe list -i
     ```  
   
 * List the **names**, **IDs**, and **passwords** of all the saved meetings:  
     ```commandline
-    $ cloe ls -p
+    $ cloe list -p
     ```
 ___
 
 ### 4. Remove a saved meeting
 ```commandline
-$ cloe rm <meeting-name>  
+$ cloe remove <meeting-name>  
 ```  
 
 Meetings can only be removed by name.  
@@ -108,7 +108,7 @@ ___
 ### 5. Clear all saved meetings  
 This removes all saved meetings from Cloe. 
 ```commandline
-$ cloe clear
+$ cloe reset
 ```  
 
 Cloe will prompt the user for confirmation before clearing the saved meetings.  
