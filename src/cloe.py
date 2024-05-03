@@ -49,19 +49,19 @@ def dump_meeting_data(meeting_dir: MeetingDirectory) -> None:
         pkl.dump(meeting_dir, f)
 
 
-def list_meeting_names(meeting_directory: MeetingDirectory, show_ids: bool = False, show_passwords: bool = False):
-    print("\n-> Saved Meetings:")
+def list_meetings(meeting_directory: MeetingDirectory, show_ids: bool = False, show_passwords: bool = False):
+    print("\n> Saved Meetings:")
 
     # Check if meeting directory is empty.
     if len(meeting_directory) == 0:
-        print("\nNo saved meetings\n")
+        print("-- No saved meetings --\n")
         return
 
     # Print out all the meetings.
     for index, meeting in enumerate(meeting_directory.get_meetings()):
 
         # Print meeting name.
-        print(f"\n{index}) {meeting.name}")
+        print(f"{index}) {meeting.name}")
 
         # If show_ids or show_passwords is True, print meeting IDs.
         if show_ids or show_passwords:
@@ -71,8 +71,9 @@ def list_meeting_names(meeting_directory: MeetingDirectory, show_ids: bool = Fal
         if show_passwords:
             print(f"\tPassword   : {meeting.password}")
 
-    # Spacing
-    print("\n")
+        # Spacing only for long formats.
+        if show_ids or show_passwords:
+            print()
 
 
 def main():
@@ -88,8 +89,11 @@ def main():
     # Adding arguments.
     parser.add_argument("command",
                         type=str,
-                        choices=['ls', 'list', 'join', 'add', 'rm', 'remove', 'clear'],
-                        help="The command to perform (ls, join, add, rm, clear)"
+                        nargs="?",
+                        const=1,
+                        choices=['join', 'add', 'remove', 'list', 'reset'],
+                        help="Action to execute",
+                        default="list"
                         )
 
     parser.add_argument("positional",
@@ -126,8 +130,8 @@ def main():
 
     # Assess the command.
     # 1. List saved meetings.
-    if args.command in ["ls", "list"]:
-        list_meeting_names(meeting_directory, args.show_ids, args.show_passwords)
+    if args.command == "list":
+        list_meetings(meeting_directory, args.show_ids, args.show_passwords)
         op_success = True
 
     # 2. Join a meeting.
@@ -182,7 +186,7 @@ def main():
             msg = f"Error: \"add\" command expects 2 or 3 arguments but received {num_args}"
 
     # 4. Remove a meeting.
-    elif args.command in ["rm", "remove"]:
+    elif args.command == "remove":
         # Check if correct number of arguments were provided.
         if num_args == 1:
             op_success, msg = meeting_directory.remove(name=args.positional[0])
@@ -191,7 +195,7 @@ def main():
             msg = f"Error: \"remove\" command expects 1 argument but received {num_args}"
 
     # 5. Clear all saved meetings.
-    elif args.command == 'clear':
+    elif args.command == "reset":
         # Confirmation prompt.
         confirm = input(f"\n > Confirm that you want to remove all saved meetings from Cloe? [N/y]: ")
 
@@ -199,11 +203,13 @@ def main():
         if confirm.lower() in ['y', 'yes']:
             # Reinitialize meeting directory to fresh MeetingDirectory instance.
             meeting_directory = MeetingDirectory()
-            op_success, msg = True, "Cleared all saved meetings"
+            op_success = True
+            msg = "Cleared all saved meetings"
 
         # If user did not confirm the clear operation.
         else:
-            op_success, msg = False, "Clear operation aborted"
+            op_success = False
+            msg = "Clear operation aborted"
 
     # Invalid command
     else:
@@ -217,7 +223,6 @@ def main():
         # Serialize the updated meeting directory to file.
         dump_meeting_data(meeting_directory)
         sys.exit(0)
-
     else:
         sys.exit(1)
 

@@ -1,3 +1,4 @@
+/.venv/
 /.idea/.gitignore
 /.idea/Cloe.iml
 /.idea/misc.xml
@@ -5,3 +6,4 @@
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/vcs.xml
 /src/test.py
+/res/

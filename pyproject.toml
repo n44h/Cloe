@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "cloe"
+version = "0.1.0"
+description = "Zoom CLI assistant"
+authors = [""]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+dill = "^0.3.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
