@@ -2,42 +2,45 @@ import os
 import sys
 import argparse
 import dill as pkl
-
+from pathlib import Path
 from utils import MeetingDirectory
 
 
 # Cloe root directory absolute path.
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = Path(__file__).absolute().parents[1]
 
-# Absolute path to the meeting data file.
-MEETING_DIR_PKL_FILENAME = "cloe.mtgdir"
+# Absolute path to the resource directory.
+RESOURCE_DIR = ROOT_DIR / "res"
 
-# Getting parent path and joining it with the file name.
-MEETING_DIR_PKL_FILEPATH = os.path.join(ROOT_DIR, "res", MEETING_DIR_PKL_FILENAME)
+# File path tot the meeting directory serialized object file
+MEETING_DIR_PKL_FILE = RESOURCE_DIR / "cloe.mtgdir"
 
 
 def load_meeting_data() -> MeetingDirectory:
     # If the file does not exist.
-    if not os.path.exists(MEETING_DIR_PKL_FILEPATH):
+    if not os.path.exists(MEETING_DIR_PKL_FILE):
+        # Create the directory.
+        os.makedirs(RESOURCE_DIR, exist_ok=True)
+
         # Creating the file.
-        with open(MEETING_DIR_PKL_FILEPATH, 'wb') as f:
+        with open(MEETING_DIR_PKL_FILE, 'wb') as f:
             pass
 
         # Print operation message.
-        print(f"Create file {MEETING_DIR_PKL_FILENAME}.")
+        print(f"Created file {MEETING_DIR_PKL_FILE}.")
 
         # Return a new MeetingDirectory instance.
         return MeetingDirectory()
 
     # If the file is empty.
-    elif os.path.getsize(MEETING_DIR_PKL_FILEPATH) == 0:
+    elif os.path.getsize(MEETING_DIR_PKL_FILE) == 0:
         # Return a new MeetingDirectory instance.
         return MeetingDirectory()
 
     # If the file exists, and it is not empty, load the MeetingDirectory instance.
     else:
         # Loading the file containing the serialized MeetingDirectory instance.
-        with open(MEETING_DIR_PKL_FILEPATH, 'rb') as f:
+        with open(MEETING_DIR_PKL_FILE, 'rb') as f:
             meeting_directory = pkl.load(f)
 
         return meeting_directory
@@ -45,7 +48,7 @@ def load_meeting_data() -> MeetingDirectory:
 
 def dump_meeting_data(meeting_dir: MeetingDirectory) -> None:
     # Dump the meeting directory to file.
-    with open(MEETING_DIR_PKL_FILEPATH, "wb") as f:
+    with open(MEETING_DIR_PKL_FILE, "wb") as f:
         pkl.dump(meeting_dir, f)
 
 
@@ -74,6 +77,10 @@ def list_meetings(meeting_directory: MeetingDirectory, show_ids: bool = False, s
         # Spacing only for long formats.
         if show_ids or show_passwords:
             print()
+
+    # End spacing for short format
+    if not show_ids and not show_passwords:
+        print()
 
 
 def main():
