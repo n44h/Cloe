@@ -7,3 +7,5 @@
 /.idea/vcs.xml
 /src/test.py
 /res/
+/poetry.lock
+/pyproject.toml
